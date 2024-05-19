@@ -7,6 +7,68 @@ import {
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
 
+const dummyData = [
+  {
+    id: 84,
+    title: 'Frankenstein; Or, The Modern Prometheus',
+    authors: [
+      {
+        name: 'Shelley, Mary Wollstonecraft',
+      },
+    ],
+    bookshelves: ['Gothic Fiction'],
+    formats: {
+      'image/jpeg':
+        'https://www.gutenberg.org/cache/epub/84/pg84.cover.medium.jpg',
+    },
+  },
+  {
+    id: 1342,
+    title: 'Pride and Prejudice',
+    authors: [
+      {
+        name: 'Austen, Jane',
+      },
+    ],
+    bookshelves: ['Harvard Classics'],
+    formats: {
+      'image/jpeg':
+        'https://www.gutenberg.org/cache/epub/1342/pg1342.cover.medium.jpg',
+    },
+  },
+  {
+    id: 2701,
+    title: 'Moby Dick; Or, The Whale',
+    authors: [
+      {
+        name: 'Melville, Herman',
+      },
+    ],
+    bookshelves: ['Best Books Ever Listings'],
+    formats: {
+      'image/jpeg':
+        'https://www.gutenberg.org/cache/epub/2701/pg2701.cover.medium.jpg',
+    },
+  },
+  {
+    id: 1259,
+    title: 'Twenty years after',
+    authors: [
+      {
+        name: 'Dumas, Alexandre',
+      },
+      {
+        name: 'Maquet, Auguste',
+      },
+    ],
+    bookshelves: ['Adventure', 'Historical Fiction', 'Movie Books'],
+    formats: {
+      'image/jpeg':
+        'https://www.gutenberg.org/cache/epub/1259/pg1259.cover.medium.jpg',
+    },
+  },
+];
+
 const BookList = () => {
   let [isLoading, setIsLoading] = useState(true);
   let [error, setError] = useState();
@@ -14,69 +76,51 @@ const BookList = () => {
 
   useEffect(() => {
     setIsLoading(false);
-    setResponse([
-      {
-        id: 84,
-        title: 'Frankenstein; Or, The Modern Prometheus',
-        authors: [
-          {
-            name: 'Shelley, Mary Wollstonecraft',
-          },
-        ],
-        bookshelves: ['Gothic Fiction'],
-        formats: {
-          'image/jpeg':
-            'https://www.gutenberg.org/cache/epub/84/pg84.cover.medium.jpg',
-        },
-      },
-      {
-        id: 1342,
-        title: 'Pride and Prejudice',
-        authors: [
-          {
-            name: 'Austen, Jane',
-          },
-        ],
-        bookshelves: ['Harvard Classics'],
-        formats: {
-          'image/jpeg':
-            'https://www.gutenberg.org/cache/epub/1342/pg1342.cover.medium.jpg',
-        },
-      },
-      {
-        id: 2701,
-        title: 'Moby Dick; Or, The Whale',
-        authors: [
-          {
-            name: 'Melville, Herman',
-          },
-        ],
-        bookshelves: ['Best Books Ever Listings'],
-        formats: {
-          'image/jpeg':
-            'https://www.gutenberg.org/cache/epub/2701/pg2701.cover.medium.jpg',
-        },
-      },
-      {
-        id: 1259,
-        title: 'Twenty years after',
-        authors: [
-          {
-            name: 'Dumas, Alexandre',
-          },
-          {
-            name: 'Maquet, Auguste',
-          },
-        ],
-        bookshelves: ['Adventure', 'Historical Fiction', 'Movie Books'],
-        formats: {
-          'image/jpeg':
-            'https://www.gutenberg.org/cache/epub/1259/pg1259.cover.medium.jpg',
-        },
-      },
-    ]);
-    setError(undefined);
+
+    (async () => {
+      try {
+        const success = await getMockData(
+          [...dummyData],
+          'unknown server error',
+          500,
+        );
+        setResponse(success.data);
+      } catch (err) {
+        console.log(err.message);
+        setError(err.message);
+      }
+      try {
+        const error = await getMockData('', '404 not found error', 3000);
+        console.log(error);
+        setError(error);
+      } catch (err) {
+        console.log(err.message);
+        setError(err.message);
+      }
+    })();
   }, []);
+
+  const getMockData = async (
+    data = '',
+    error = 'unknown server error',
+    delay,
+  ) => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (data) {
+          resolve({
+            type: 'Success',
+            data,
+          });
+        } else {
+          reject({
+            type: 'Error',
+            message: error,
+          });
+        }
+      }, delay || 1000);
+    });
+  };
 
   const getContent = () => {
     if (isLoading) {
@@ -88,7 +132,9 @@ const BookList = () => {
     }
 
     if (response) {
-      console.warn(response);
+      return (response as unknown[]).map((book: unknown) => (
+        <Text key={book.id}>{book.title}</Text>
+      ));
     }
   };
 
