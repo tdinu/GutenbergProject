@@ -6,8 +6,9 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
+import { Book } from '../types';
 
-const dummyData = [
+const dummyData: Book[] = [
   {
     id: 84,
     title: 'Frankenstein; Or, The Modern Prometheus',
@@ -71,8 +72,8 @@ const dummyData = [
 
 const BookList = () => {
   let [isLoading, setIsLoading] = useState(true);
-  let [error, setError] = useState();
-  let [response, setResponse] = useState<unknown>();
+  let [error, setError] = useState<string | null>(null);
+  let [response, setResponse] = useState<Book[]>([]);
 
   useEffect(() => {
     setIsLoading(false);
@@ -86,26 +87,19 @@ const BookList = () => {
         );
         setResponse(success.data);
       } catch (err) {
-        console.log(err.message);
-        setError(err.message);
-      }
-      try {
-        const error = await getMockData('', '404 not found error', 3000);
-        console.log(error);
-        setError(error);
-      } catch (err) {
-        console.log(err.message);
-        setError(err.message);
+        const { message } = err as Error;
+        setError(message);
       }
     })();
   }, []);
 
   const getMockData = async (
-    data = '',
+    data: Book[] = [],
+    // eslint-disable-next-line @typescript-eslint/no-shadow
     error = 'unknown server error',
-    delay,
+    delay = 1000,
   ) => {
-    return new Promise((resolve, reject) => {
+    return new Promise<{ type: String; data: Book[] }>((resolve, reject) => {
       setTimeout(() => {
         if (data) {
           resolve({
@@ -118,7 +112,7 @@ const BookList = () => {
             message: error,
           });
         }
-      }, delay || 1000);
+      }, delay);
     });
   };
 
@@ -132,7 +126,7 @@ const BookList = () => {
     }
 
     if (response) {
-      return (response as unknown[]).map((book: unknown) => (
+      return (response as Book[]).map((book: Book) => (
         <Text key={book.id}>{book.title}</Text>
       ));
     }
@@ -157,7 +151,6 @@ const styles = StyleSheet.create({
     marginBottom: 50,
     shadowColor: 'rgba(0, 0, 0, 0.2)',
     shadowOffset: { width: 0, height: 2 },
-    // shadowOpacity: 0.2,
     elevation: 2,
     position: 'relative',
   },
