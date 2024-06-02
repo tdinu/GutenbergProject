@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, { useState } from 'react';
 import { Author, Book } from '../types';
 import Card from './Card';
@@ -39,11 +39,16 @@ const BookDetails = ({ book }: { book: Book }) => {
         </View>
         <View style={styles.imageSection}>
           <CardSection styles={styles.sectionContainer}>
-            <Image
-              source={{ uri: book.formats?.['image/jpeg'] }}
-              // eslint-disable-next-line react-native/no-inline-styles
-              style={{ width: 150, height: 225 }}
-            />
+            <TouchableOpacity
+              onPress={() => {
+                setModalVisible(true);
+              }}>
+              <Image
+                source={{ uri: book.formats?.['image/jpeg'] }}
+                // eslint-disable-next-line react-native/no-inline-styles
+                style={{ width: 150, height: 225 }}
+              />
+            </TouchableOpacity>
           </CardSection>
         </View>
       </Card>
