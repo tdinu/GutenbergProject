@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { Book } from '../types';
+import BookDetails from './BookDetails';
 
 const dummyData: Book[] = [
   {
@@ -127,7 +128,7 @@ const BookList = () => {
 
     if (response) {
       return (response as Book[]).map((book: Book) => (
-        <Text key={book.id}>{book.title}</Text>
+        <BookDetails book={book} key={book.id} />
       ));
     }
   };
