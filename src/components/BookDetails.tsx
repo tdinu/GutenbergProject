@@ -1,13 +1,36 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Author, Book } from '../types';
 import Card from './Card';
 import CardSection from './CardSection';
 import DetailsModal from './DetailsModal';
+import axios from 'axios';
 
 const BookDetails = ({ book }: { book: Book }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [bookDetails, setBookDetails] = useState(book);
+
+  const fetchDetails = () => {
+    axios
+      .get('https://gutendex.com/books/' + book.id)
+      .then(
+        res => {
+          if (res.data) {
+            setBookDetails(res.data);
+          }
+        },
+        // eslint-disable-next-line handle-callback-err, @typescript-eslint/no-unused-vars
+        err => {},
+      )
+      .catch(err => console.warn('catch error', err.message));
+  };
+
+  useEffect(() => {
+    if (modalVisible) {
+      fetchDetails();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [modalVisible]);
 
   return (
     <>
