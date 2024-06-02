@@ -1,47 +1,58 @@
 import { Image, StyleSheet, Text, View } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import { Author, Book } from '../types';
 import Card from './Card';
 import CardSection from './CardSection';
+import DetailsModal from './DetailsModal';
 
 const BookDetails = ({ book }: { book: Book }) => {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [bookDetails, setBookDetails] = useState(book);
+
   return (
-    <Card>
-      <View style={styles.contentSection}>
-        {/* eslint-disable-next-line react-native/no-inline-styles */}
-        <CardSection styles={[styles.sectionContainer, { marginBottom: 10 }]}>
-          <Text style={styles.sectionTitle}>Title: {book.title}</Text>
-        </CardSection>
-        {}
-        <CardSection
-          styles={[
-            styles.sectionContainer,
-            // eslint-disable-next-line react-native/no-inline-styles
-            {
-              flexDirection: 'column',
-              width: '100%',
-              alignItems: 'flex-start',
-            },
-          ]}>
-          {book.authors &&
-            book.authors.length > 0 &&
-            book.authors.map((author: Author, i: number) => (
-              <Text key={i} style={styles.cardSectionSubtitle}>
-                Author: {author.name}
-              </Text>
-            ))}
-        </CardSection>
-      </View>
-      <View style={styles.imageSection}>
-        <CardSection styles={styles.sectionContainer}>
-          <Image
-            source={{ uri: book.formats?.['image/jpeg'] }}
-            // eslint-disable-next-line react-native/no-inline-styles
-            style={{ width: 150, height: 225 }}
-          />
-        </CardSection>
-      </View>
-    </Card>
+    <>
+      <Card>
+        <View style={styles.contentSection}>
+          {/* eslint-disable-next-line react-native/no-inline-styles */}
+          <CardSection styles={[styles.sectionContainer, { marginBottom: 10 }]}>
+            <Text style={styles.sectionTitle}>Title: {book.title}</Text>
+          </CardSection>
+
+          <CardSection
+            styles={[
+              styles.sectionContainer,
+              // eslint-disable-next-line react-native/no-inline-styles
+              {
+                flexDirection: 'column',
+                width: '100%',
+                alignItems: 'flex-start',
+              },
+            ]}>
+            {book.authors &&
+              book.authors.length > 0 &&
+              book.authors.map((author: Author, i: number) => (
+                <Text key={i} style={styles.cardSectionSubtitle}>
+                  Author: {author.name}
+                </Text>
+              ))}
+          </CardSection>
+        </View>
+        <View style={styles.imageSection}>
+          <CardSection styles={styles.sectionContainer}>
+            <Image
+              source={{ uri: book.formats?.['image/jpeg'] }}
+              // eslint-disable-next-line react-native/no-inline-styles
+              style={{ width: 150, height: 225 }}
+            />
+          </CardSection>
+        </View>
+      </Card>
+      <DetailsModal
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        book={bookDetails}
+      />
+    </>
   );
 };
 
